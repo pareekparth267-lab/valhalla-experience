@@ -247,5 +247,32 @@ document.querySelectorAll('.mobile-accordion-btn').forEach(function(btn) {
       this.classList.add('active');
       panel.classList.add('open');
     }
+    // ── RESPONSIVE: Show/hide desktop tabs vs mobile accordion ──
+function checkTabsLayout() {
+  const desktopTabs = document.getElementById('desktopTabs');
+  const mobileTabs = document.getElementById('mobileTabs');
+  
+  if (!desktopTabs || !mobileTabs) return;
+  
+  if (window.innerWidth <= 768) {
+    desktopTabs.style.display = 'none';
+    mobileTabs.style.display = 'block';
+  } else {
+    desktopTabs.style.display = 'block';
+    mobileTabs.style.display = 'none';
+  }
+}
+
+// Run on load and whenever the window is resized
+window.addEventListener('DOMContentLoaded', checkTabsLayout);
+window.addEventListener('resize', checkTabsLayout);
+
+// ── NAV TOGGLE (Hamburger Menu) ──
+const navToggleBtn = document.getElementById('navToggle');
+if(navToggleBtn) {
+  navToggleBtn.addEventListener('click', function() {
+    document.getElementById('navLinks').classList.toggle('open');
+  });
+}
   });
 });
