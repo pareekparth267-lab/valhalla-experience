@@ -431,3 +431,138 @@ footer { background: var(--bg2); border-top: 1px solid var(--border); padding: 4
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg2); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+/* ===================================== */
+/* 🔥 RESPONSIVE FIX FOR YOUR DESIGN */
+/* ===================================== */
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Fix container padding */
+.container {
+  width: 100%;
+  padding: 0 16px;
+}
+
+/* ================= TABLET ================= */
+@media (max-width: 1024px) {
+
+  .section {
+    padding: 70px 0;
+  }
+
+  .section-title {
+    font-size: 38px;
+  }
+
+  .scroll-cta-fields {
+    flex-wrap: wrap;
+  }
+
+  .scroll-cta-fields input,
+  .scroll-cta-fields select {
+    flex: 1 1 48%;
+  }
+
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 768px) {
+
+  body {
+    font-size: 14px;
+  }
+
+  .section {
+    padding: 60px 0;
+  }
+
+  .section-title {
+    font-size: 28px;
+    margin-bottom: 25px;
+  }
+
+  /* NAV */
+  nav {
+    height: 60px;
+    padding: 0 16px;
+  }
+
+  .nav-logo {
+    font-size: 18px;
+  }
+
+  /* NAV MENU FIX */
+  .nav-links {
+    flex-direction: column;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    right: 0;
+    background: #13161e;
+    display: none;
+    padding: 20px;
+  }
+
+  .nav-links.open {
+    display: flex;
+  }
+
+  /* CTA BAR FIX */
+  .scroll-cta-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 15px;
+  }
+
+  .scroll-cta-fields {
+    flex-direction: column;
+  }
+
+  .scroll-cta-fields input,
+  .scroll-cta-fields select {
+    width: 100%;
+  }
+
+  .scroll-cta-contact {
+    text-align: center;
+  }
+
+  /* HERO FIX */
+  .couples-hero-section {
+    padding: 20px;
+    min-height: auto;
+  }
+
+  .couples-card-wrapper {
+    padding: 1rem;
+  }
+
+  /* FORCE STACK FOR ALL FLEX LAYOUTS */
+  .row,
+  .section-flex,
+  .flex {
+    flex-direction: column !important;
+  }
+
+}
+
+/* ================= SMALL MOBILE ================= */
+@media (max-width: 480px) {
+
+  .section-title {
+    font-size: 24px;
+  }
+
+  .nav-logo {
+    font-size: 16px;
+  }
+
+  .scroll-cta-btn {
+    width: 100%;
+  }
+
+}
