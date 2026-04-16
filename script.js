@@ -213,12 +213,29 @@ document.querySelectorAll('.wcu-card').forEach(function(card) {
     if (el) { el.style.opacity = '1'; el.style.fill = 'rgba(201,169,110,0.2)'; }
   });
   card.addEventListener('mouseleave', function() {
-    document.querySelectorAll('.wcu-svg-slice').forEach(function(s) {
-      s.style.opacity = '1'; s.style.fill = '';
-      // Close mobile menu when clicking link
-document.querySelectorAll('.nav-links a').forEach(link => {
+    document.querySelectorAll('.nav-links a').forEach((link) => {
   link.addEventListener('click', () => {
     document.getElementById('navLinks').classList.remove('open');
-    });
+  });
+});
+    // ===============================
+// 📱 MOBILE SLIDER TOUCH IMPROVEMENT
+// ===============================
+
+document.querySelectorAll('.ba-card').forEach(card => {
+  let divider = card.querySelector('.ba-divider');
+  let after = card.querySelector('.ba-after-wrap');
+
+  function move(x) {
+    let rect = card.getBoundingClientRect();
+    let percent = ((x - rect.left) / rect.width) * 100;
+    percent = Math.max(0, Math.min(100, percent));
+    divider.style.left = percent + "%";
+    after.style.clipPath = `inset(0 ${100 - percent}% 0 0)`;
+  }
+card.addEventListener('mouseleave', function() {
+  document.querySelectorAll('.wcu-svg-slice').forEach(function(s) {
+    s.style.opacity = '1';
+    s.style.fill = '';
   });
 });
