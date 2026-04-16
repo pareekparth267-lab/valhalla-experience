@@ -215,6 +215,10 @@ document.querySelectorAll('.wcu-card').forEach(function(card) {
   card.addEventListener('mouseleave', function() {
     document.querySelectorAll('.wcu-svg-slice').forEach(function(s) {
       s.style.opacity = '1'; s.style.fill = '';
+      // Close mobile menu when clicking link
+document.querySelectorAll('.nav-links a').forEach(link => {
+  link.addEventListener('click', () => {
+    document.getElementById('navLinks').classList.remove('open');
     });
   });
 });
