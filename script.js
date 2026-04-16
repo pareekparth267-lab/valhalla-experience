@@ -213,29 +213,39 @@ document.querySelectorAll('.wcu-card').forEach(function(card) {
     if (el) { el.style.opacity = '1'; el.style.fill = 'rgba(201,169,110,0.2)'; }
   });
   card.addEventListener('mouseleave', function() {
-    document.querySelectorAll('.nav-links a').forEach((link) => {
-  link.addEventListener('click', () => {
-    document.getElementById('navLinks').classList.remove('open');
+    document.querySelectorAll('.wcu-svg-slice').forEach(function(s) {
+      s.style.opacity = '1'; s.style.fill = '';
+    });
   });
 });
-    // ===============================
-// 📱 MOBILE SLIDER TOUCH IMPROVEMENT
-// ===============================
-
-document.querySelectorAll('.ba-card').forEach(card => {
-  let divider = card.querySelector('.ba-divider');
-  let after = card.querySelector('.ba-after-wrap');
-
-  function move(x) {
-    let rect = card.getBoundingClientRect();
-    let percent = ((x - rect.left) / rect.width) * 100;
-    percent = Math.max(0, Math.min(100, percent));
-    divider.style.left = percent + "%";
-    after.style.clipPath = `inset(0 ${100 - percent}% 0 0)`;
+// ── RESPONSIVE: Show/hide desktop tabs vs mobile accordion ──
+function checkTabsLayout() {
+  var desktopTabs = document.getElementById('desktopTabs');
+  var mobileTabs = document.getElementById('mobileTabs');
+  if (!desktopTabs || !mobileTabs) return;
+  if (window.innerWidth <= 768) {
+    desktopTabs.style.display = 'none';
+    mobileTabs.style.display = 'block';
+  } else {
+    desktopTabs.style.display = 'block';
+    mobileTabs.style.display = 'none';
   }
-card.addEventListener('mouseleave', function() {
-  document.querySelectorAll('.wcu-svg-slice').forEach(function(s) {
-    s.style.opacity = '1';
-    s.style.fill = '';
+}
+checkTabsLayout();
+window.addEventListener('resize', checkTabsLayout);
+
+// ── MOBILE ACCORDION ──
+document.querySelectorAll('.mobile-accordion-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var allBtns = document.querySelectorAll('.mobile-accordion-btn');
+    var allPanels = document.querySelectorAll('.mobile-accordion-panel');
+    var panel = this.parentElement.querySelector('.mobile-accordion-panel');
+    var isOpen = panel.classList.contains('open');
+    allBtns.forEach(function(b) { b.classList.remove('active'); });
+    allPanels.forEach(function(p) { p.classList.remove('open'); });
+    if (!isOpen) {
+      this.classList.add('active');
+      panel.classList.add('open');
+    }
   });
 });
