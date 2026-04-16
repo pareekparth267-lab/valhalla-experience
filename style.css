@@ -563,6 +563,99 @@ img {
 
   .scroll-cta-btn {
     width: 100%;
+
+    /* ===================================== */
+/* 🔥 FINAL RESPONSIVE FIX (COMPLETE) */
+/* ===================================== */
+
+/* Prevent horizontal scroll everywhere */
+html, body {
+  overflow-x: hidden;
+}
+
+/* ---------- BEFORE/AFTER SLIDER FIX ---------- */
+.ba-card {
+  width: 100%;
+  overflow: hidden;
+}
+
+.ba-divider {
+  width: 30px;
+  touch-action: none;
+}
+
+/* Make slider easier on mobile */
+@media (max-width: 768px) {
+  .ba-divider {
+    width: 40px;
+  }
+}
+
+/* ---------- ROTATION GALLERY FIX ---------- */
+.rg-strip {
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+}
+
+.rg-thumb {
+  min-width: 220px;
+}
+
+@media (max-width: 768px) {
+  .rg-thumb {
+    min-width: 160px;
+  }
+}
+
+/* ---------- HERO OVERLAY BUTTON FIX ---------- */
+@media (max-width: 768px) {
+
+  .couples-btn-overlay {
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important;
+    margin: 8px 0;
+    display: block;
+    text-align: center;
+    padding: 12px;
+    background: rgba(201,169,110,0.1);
+  }
+
+}
+
+/* ---------- FORM SPACING FIX ---------- */
+@media (max-width: 768px) {
+
+  input, select, button {
+    font-size: 14px;
+  }
+
+  .scroll-cta-fields {
+    gap: 10px;
+  }
+
+}
+
+/* ---------- FLEX FIX GLOBAL ---------- */
+@media (max-width: 768px) {
+
+  .row,
+  .flex,
+  .section-flex,
+  .grid {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+}
+
+/* ---------- IMAGE SAFETY ---------- */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
   }
 
 }
