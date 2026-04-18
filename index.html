@@ -496,100 +496,101 @@
 <script src="script.js"></script>
 
 <script>
-// ── Rotation Gallery v2 ──
+// ── Rotation Gallery v2 — Image 2 style: flat baseline, alternating big/small ──
 (function() {
-  var cards = Array.from(document.querySelectorAll('.rg2-card'));
-  var dots  = Array.from(document.querySelectorAll('.rg2-dot'));
-  var badge = document.getElementById('rg2Badge');
-  var navBtn = document.getElementById('rg2NavBtn');
-  var total = cards.length;
-  var active = 2; // start at center
-  var lastDirection = 'right'; // track last nav direction
+  var cards   = Array.from(document.querySelectorAll('.rg2-card'));
+  var dots    = Array.from(document.querySelectorAll('.rg2-dot'));
+  var badge   = document.getElementById('rg2Badge');
+  var navBtn  = document.getElementById('rg2NavBtn');
+  var strip   = document.getElementById('rg2Strip');
+  var total   = cards.length;
+  var active  = 1; // start at index 1 so it mirrors Image 2 (2nd card highlighted)
+
+  // Pattern for non-active cards (position relative to active in strip):
+  // pos 0 = active (handled separately)
+  // pos 1,3,5 = small  |  pos 2,4,6 = big  (alternating from active outward)
+  function getSizeClass(pos) {
+    if (pos === 0) return ''; // active card
+    return (pos % 2 === 0) ? 'rg2-big' : 'rg2-small';
+  }
 
   function setActive(i, direction) {
     active = ((i % total) + total) % total;
 
-    // Update button arrow to reflect direction
-    if (direction) lastDirection = direction;
-    if (navBtn) navBtn.textContent = lastDirection === 'left' ? '‹' : '›';
+    // Update nav button arrow
+    if (navBtn) navBtn.textContent = (direction === 'left') ? '‹' : '›';
 
+    // Remove all state classes
     cards.forEach(function(c) {
-      c.classList.remove('active', 'semi-active');
+      c.classList.remove('active', 'rg2-big', 'rg2-small');
     });
 
-    cards.forEach(function(c, idx) {
-      var rel = ((idx - active + total) % total + total) % total;
-      if (rel === 0) c.classList.add('active');
-      else if (rel === 1 || rel === total - 1) c.classList.add('semi-active');
+    // Reorder DOM so active card is at visual position 1 (second from left)
+    // This gives the look of Image 2: partial card on left, active 2nd, rest flowing right
+    var ACTIVE_SLOT = 1; // 0-indexed position in the visible strip
+    var reordered = [];
+    for (var j = 0; j < total; j++) {
+      reordered.push(cards[((active - ACTIVE_SLOT + j + total * 10) % total)]);
+    }
+
+    reordered.forEach(function(card, pos) {
+      var sizeClass = getSizeClass(pos);
+      if (pos === ACTIVE_SLOT) {
+        card.classList.add('active');
+      } else {
+        if (sizeClass) card.classList.add(sizeClass);
+      }
+      strip.appendChild(card);
     });
 
-    // Move nav button to active card
+    // Move nav button inside the active card
     var activeCard = cards[active];
     if (navBtn && activeCard && !activeCard.contains(navBtn)) {
       activeCard.appendChild(navBtn);
     }
 
+    // Update dots and badge
     dots.forEach(function(d, idx) { d.classList.toggle('active', idx === active); });
     if (badge) badge.textContent = active + 1;
-
-    // Reorder DOM: bring active to visual center
-    var strip = document.getElementById('rg2Strip');
-    if (!strip) return;
-    var centerPos = 3;
-    var shift = active - centerPos;
-    var reordered = [];
-    for (var j = 0; j < total; j++) {
-      reordered.push(cards[((j + shift) % total + total) % total]);
-    }
-
-    // Apply alternating big/small classes based on strip position
-    reordered.forEach(function(card, pos) {
-      card.classList.remove('rg2-big', 'rg2-small');
-      // Center card (pos 3) is always active/big via .active override
-      // Alternate: even positions = big, odd = small
-      if (pos % 2 === 0) card.classList.add('rg2-big');
-      else card.classList.add('rg2-small');
-      strip.appendChild(card);
-    });
   }
 
-  // Clicks on cards — detect left or right of active
+  // Click on any card
   cards.forEach(function(c, i) {
     c.addEventListener('click', function() {
-      var rel = ((i - active + total) % total + total) % total;
-      var dir = (rel <= total / 2) ? 'right' : 'left';
-      setActive(i, dir);
+      if (i === active) return;
+      var rel = ((i - active + total) % total);
+      setActive(i, rel <= total / 2 ? 'right' : 'left');
     });
   });
 
-  // Dots
+  // Dots click
   dots.forEach(function(d, i) {
     d.addEventListener('click', function() {
-      var dir = i > active ? 'right' : 'left';
-      setActive(i, dir);
+      setActive(i, i > active ? 'right' : 'left');
     });
   });
 
-  // Nav button — direction toggles on each click
+  // Nav button — always advances forward (right), wraps around
   if (navBtn) {
     navBtn.addEventListener('click', function(e) {
       e.stopPropagation();
-      if (lastDirection === 'right') {
-        setActive(active + 1, 'right');
-      } else {
+      var arrow = navBtn.textContent.trim();
+      if (arrow === '‹') {
         setActive(active - 1, 'left');
+      } else {
+        setActive(active + 1, 'right');
       }
     });
   }
 
-  // Keyboard
+  // Keyboard arrows
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'ArrowLeft') setActive(active - 1, 'left');
+    if (e.key === 'ArrowLeft')  setActive(active - 1, 'left');
     if (e.key === 'ArrowRight') setActive(active + 1, 'right');
   });
 
-  // Init
-  setActive(2, 'right');
+  // Init — start at index 1, nav pointing right
+  setActive(active, 'right');
 })();
 </script>
 
