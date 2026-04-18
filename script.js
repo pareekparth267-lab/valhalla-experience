@@ -52,7 +52,39 @@ function checkTabsLayout() {
 checkTabsLayout();
 window.addEventListener('resize', checkTabsLayout);
 
-// ── COUPLES EXPERIENCE MODAL ──
+// ── SCROLL TO SECTION HELPER ──
+// These are the possible id="" values for each experience section in your HTML.
+// The script tries each one in order and scrolls to the first match it finds.
+// ✏️  If none work, open your HTML, find the <section id="..."> for each experience,
+//     and add that id to the matching array below.
+var sectionTargets = {
+  journey:  ['journey',  'journey-section',  'couples-journey',  'experience-journey',  'couples'],
+  valkyrie: ['valkyrie', 'valkyrie-section', 'womens-experience','experience-valkyrie', 'womens'],
+  odin:     ['odin',     'odin-section',     'mens-experience',  'experience-odin',     'mens']
+};
+
+function scrollToExperience(key) {
+  var ids = sectionTargets[key];
+  if (!ids) return false;
+
+  for (var i = 0; i < ids.length; i++) {
+    var el = document.getElementById(ids[i]);
+    if (el) {
+      // Close modal if it's open
+      var modal = document.getElementById('couplesModal');
+      if (modal) modal.classList.remove('open');
+
+      // Account for fixed nav height
+      var navHeight = nav ? nav.offsetHeight : 80;
+      var top = el.getBoundingClientRect().top + window.scrollY - navHeight - 20;
+      window.scrollTo({ top: top, behavior: 'smooth' });
+      return true;
+    }
+  }
+  return false; // no matching section found in HTML
+}
+
+// ── COUPLES EXPERIENCE — click scrolls to section, falls back to modal ──
 var couplesExperiences = {
   journey: {
     tag: '01 — Featured',
@@ -75,13 +107,19 @@ var couplesExperiences = {
 };
 
 function openCouplesModal(key) {
-  var data = couplesExperiences[key];
-  if (!data) return;
-  document.getElementById('couplesModalTag').textContent = data.tag;
-  document.getElementById('couplesModalTitle').textContent = data.title;
-  document.getElementById('couplesModalSubtitle').textContent = data.subtitle;
-  document.getElementById('couplesModalBody').textContent = data.body;
-  document.getElementById('couplesModal').classList.add('open');
+  // Try to scroll to the matching section first
+  var scrolled = scrollToExperience(key);
+
+  // If no section was found in the HTML, open the modal as fallback
+  if (!scrolled) {
+    var data = couplesExperiences[key];
+    if (!data) return;
+    document.getElementById('couplesModalTag').textContent      = data.tag;
+    document.getElementById('couplesModalTitle').textContent    = data.title;
+    document.getElementById('couplesModalSubtitle').textContent = data.subtitle;
+    document.getElementById('couplesModalBody').textContent     = data.body;
+    document.getElementById('couplesModal').classList.add('open');
+  }
 }
 
 function closeCouplesModal() {
@@ -268,7 +306,6 @@ document.querySelectorAll('.mobile-accordion-btn').forEach(function (btn) {
 
   if (!panel || !nodes.length) return;
 
-  // Node config: color, icon, label
   var nodeConfig = {
     'wcu-node-tl': { color: '#b3913e', icon: 'fa-arrows-rotate', label: 'Our Philosophy'  },
     'wcu-node-tr': { color: '#4a5e35', icon: 'fa-award',          label: 'Our Promise'     },
@@ -276,7 +313,6 @@ document.querySelectorAll('.mobile-accordion-btn').forEach(function (btn) {
     'wcu-node-br': { color: '#b3913e', icon: 'fa-person-circle-plus', label: 'Your Journey' }
   };
 
-  // Arrow horizontal % per node (matches SVG centroid X positions)
   var arrowPct = {
     'wcu-node-tl': '26.75%',
     'wcu-node-tr': '73.25%',
@@ -293,7 +329,6 @@ document.querySelectorAll('.mobile-accordion-btn').forEach(function (btn) {
         e.preventDefault();
         e.stopPropagation();
 
-        // Get node type
         var cfg   = { color: '#b3913e', icon: 'fa-arrows-rotate', label: 'Section' };
         var arrow = '50%';
         Object.keys(nodeConfig).forEach(function (cls) {
@@ -307,7 +342,6 @@ document.querySelectorAll('.mobile-accordion-btn').forEach(function (btn) {
         var text  = node.getAttribute('data-text')  || '';
         var alreadyActive = node.classList.contains('active');
 
-        // Reset all
         nodes.forEach(function (n) {
           n.classList.remove('active');
           n.style.removeProperty('--node-color');
@@ -315,14 +349,11 @@ document.querySelectorAll('.mobile-accordion-btn').forEach(function (btn) {
         panel.classList.remove('open');
 
         if (!alreadyActive) {
-          // Mark active
           node.classList.add('active');
           node.style.setProperty('--node-color', cfg.color);
 
-          // Update panel content
           indicator.style.background = cfg.color;
 
-          // Arrow: set position and color via CSS custom props on the arrow element
           if (arrowEl) {
             arrowEl.style.setProperty('--arrow-left', arrow);
             arrowEl.style.setProperty('--arrow-color', cfg.color);
@@ -330,13 +361,11 @@ document.querySelectorAll('.mobile-accordion-btn').forEach(function (btn) {
             arrowEl.style.borderBottomColor = cfg.color;
           }
 
-          // Icon orb
           if (orbEl) {
             orbEl.style.background = cfg.color;
             orbEl.innerHTML = '<i class="fa-solid ' + cfg.icon + '"></i>';
           }
 
-          // Label, title, text
           if (labelEl) { labelEl.textContent = cfg.label; labelEl.style.color = cfg.color; }
           if (titleEl) titleEl.textContent = title;
           if (textEl)  textEl.textContent  = text;
@@ -345,7 +374,6 @@ document.querySelectorAll('.mobile-accordion-btn').forEach(function (btn) {
             panel.classList.add('open');
           });
 
-          // Scroll panel into view
           setTimeout(function () {
             panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
           }, 100);
@@ -354,7 +382,6 @@ document.querySelectorAll('.mobile-accordion-btn').forEach(function (btn) {
     });
   });
 
-  // Reset on resize to desktop
   window.addEventListener('resize', function () {
     if (!isMobile()) {
       nodes.forEach(function (n) {
