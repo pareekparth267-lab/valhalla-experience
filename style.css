@@ -129,14 +129,23 @@ nav.nav-hidden .nav-links { pointer-events: none; }
 .couples-ornament-diamond { width: 10px; height: 10px; background: #c29e6c; transform: rotate(45deg); }
 .couples-card-frame {
   position: relative;
-  max-width: 1640px;
-  width: 100%;
+  max-width: 2640px;
+  width: 250%;
   filter: drop-shadow(0 0 40px rgba(194,158,108,0.18)) drop-shadow(0 8px 32px rgba(0,0,0,0.7));
   animation: couplesCardIn 1.2s cubic-bezier(0.22,1,0.36,1) both;
   transform: none;
   transform-origin: center center;
+  -webkit-filter: drop-shadow(0 0 40px rgba(194,158,108,0.18)) drop-shadow(0 8px 32px rgba(0,0,0,0.7));
+  -webkit-animation: couplesCardIn 1.2s cubic-bezier(0.22,1,0.36,1) both;
 }
 .couples-card-frame svg { width: 100% !important; height: auto !important; display: block; }
+/* Make the SVG itself scale bigger */
+.couples-card-frame svg {
+  width: 100% !important;
+  height: auto !important;
+  transform: scale(1.2); /* ← add this to enlarge the oval */
+  transform-origin: center center;
+}
 .couples-btn-overlay {
   position: absolute;
   display: block;
@@ -1017,9 +1026,31 @@ svg { max-width: 100%; height: auto; }
    ══════════════════════════════════════════ */
 
 .rg2-section {
-  background: #fff;
+  background: #f7f6f4;
   padding: 60px 0 0 0;
   overflow: hidden;
+}
+
+/* ── Section Title ── */
+.rg2-section-title-wrap {
+  max-width: 1200px;
+  margin: 0 auto 36px auto;
+  padding: 0 48px;
+}
+
+.rg2-section-title {
+  font-family: var(--font-display, 'Cormorant Garamond', serif);
+  font-size: clamp(28px, 3vw, 42px);
+  font-weight: 700;
+  color: #111 !important;
+  margin: 0 0 14px 0;
+  line-height: 1.1;
+}
+
+.rg2-section-divider {
+  width: 100%;
+  height: 1px;
+  background: #e0ddd9;
 }
 
 /* ── Hero text block ── */
@@ -1028,7 +1059,7 @@ svg { max-width: 100%; height: auto; }
   grid-template-columns: 1fr 1fr;
   gap: 40px;
   max-width: 1200px;
-  margin: 0 auto 56px auto;
+  margin: 0 auto 48px auto;
   padding: 0 48px;
   align-items: start;
 }
@@ -1105,11 +1136,11 @@ svg { max-width: 100%; height: auto; }
   cursor: pointer;
   transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   /* default side card */
-  width: 200px;
-  height: 160px;
-  margin: 0 -8px;
-  opacity: 0.7;
-  border-radius: 4px;
+  width: 180px;
+  height: 145px;
+  margin: 0 -6px;
+  opacity: 0.65;
+  border-radius: 6px;
 }
 .rg2-card img {
   width: 100%;
@@ -1122,24 +1153,24 @@ svg { max-width: 100%; height: auto; }
 
 /* Active / center card — larger, raised */
 .rg2-card.active {
-  width: 290px;
-  height: 220px;
+  width: 270px;
+  height: 210px;
   opacity: 1;
   z-index: 10;
   box-shadow: 0 20px 60px rgba(0,0,0,0.22);
-  border-radius: 4px;
-  margin: 0 4px;
-  transform: translateY(-24px);
+  border-radius: 6px;
+  margin: 0 6px;
+  transform: translateY(-20px);
 }
 
 /* Semi-active neighbors */
 .rg2-card.semi-active {
-  width: 240px;
-  height: 185px;
+  width: 220px;
+  height: 175px;
   opacity: 0.85;
   z-index: 5;
-  transform: translateY(-10px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  transform: translateY(-8px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.10);
 }
 
 /* Nav button on center card */
@@ -1390,103 +1421,202 @@ hr.divider { border-top-color: #e0d8c8 !important; }
 #why-us #wcuPanelTitle { color: #1a1a1a !important; }
 #why-us #wcuPanelText { color: #555 !important; }
 
-/* ═══════════════════════════════════════════════════════
-   PASTE THIS at the bottom of your style.css
-   ═══════════════════════════════════════════════════════ */
+/* ── MAKE FULL SECTIONS CLICKABLE ── */
+.couples-card-frame {
+  position: relative;
+}
 
-/* ── EXPERIENCE SECTIONS (Journey / Valkyrie / Odin) ── */
-.experience-section {
+/* ── COUPLES BTN OVERLAY — PRECISE FIT ── */
+
+/* Journey to Valhalla — top center oval */
+.couples-btn-1 {
+  position: absolute;
+  top: 0%;
+  left: 27%;
+  width: 46%;
+  height: 44%;
+  z-index: 10;
+  cursor: pointer;
+  clip-path: ellipse(50% 48% at 50% 50%);
+}
+
+/* Odin's Hall — bottom left */
+.couples-btn-3 {
+  position: absolute;
+  top: 42%;
+  left: 14%;
+  width: 36%;
+  height: 55%;
+  z-index: 10;
+  cursor: pointer;
+  clip-path: polygon(12% 0%, 100% 0%, 88% 100%, 0% 100%);
+}
+
+/* Valhalla's Valkyrie — bottom right */
+.couples-btn-2 {
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  width: 36%;
+  height: 55%;
+  z-index: 10;
+  cursor: pointer;
+  clip-path: polygon(0% 0%, 88% 0%, 100% 100%, 12% 100%);
+}
+/* Remove hover highlight on couples overlay buttons */
+.couples-btn-1,
+.couples-btn-2,
+.couples-btn-3 {
+  background: transparent !important;
+  text-decoration: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.couples-btn-1:hover,
+.couples-btn-2:hover,
+.couples-btn-3:hover,
+.couples-btn-1:focus,
+.couples-btn-2:focus,
+.couples-btn-3:focus,
+.couples-btn-1:active,
+.couples-btn-2:active,
+.couples-btn-3:active {
+  background: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+#scrollCtaBar {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  z-index: 9999 !important;
+  margin: 0 !important;
+}
+/* ─────────────────────────────────────────────────
+   ROTATION GALLERY — alternating big / small cards
+   ───────────────────────────────────────────────── */
+
+/* Outer wrapper clips the strip */
+.rg-wrapper {
+  overflow: hidden;
+  position: relative;
+}
+
+/* The scrollable strip — cards sit on a shared bottom baseline */
+#rgStrip {
+  display: flex;
+  align-items: flex-end;          /* ← baseline alignment for the wave effect */
+  gap: 12px;
+  transition: transform 0.45s cubic-bezier(0.25, 0.8, 0.25, 1);
+  will-change: transform;
+}
+
+/* ── Base thumb styles ── */
+.rg-thumb {
+  flex-shrink: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition:
+    width  0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
+    height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
+    box-shadow 0.3s ease,
+    opacity 0.3s ease;
+  position: relative;
+}
+
+.rg-thumb img {
   width: 100%;
-  padding: 100px 40px;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+/* ── Even-index cards: BIG ── */
+.rg-thumb.rg-big {
+  width:  160px;
+  height: 200px;
+  opacity: 0.75;
+}
+
+/* ── Odd-index cards: SMALL ── */
+.rg-thumb.rg-small {
+  width:  140px;
+  height: 140px;
+  opacity: 0.65;
+}
+
+/* ── Adjacent to active: slightly more visible ── */
+.rg-thumb.semi-active {
+  opacity: 0.88;
+}
+
+/* ── Active card: always the largest ── */
+.rg-thumb.rg-active {
+  width:  240px;
+  height: 280px;
+  opacity: 1;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
+  cursor: default;
+}
+
+/* ── Nav button centred on the active card ──
+   Place a single <button id="rgNavBtn"> inside each .rg-thumb, or absolutely
+   position one floating button over the active card via JS.
+   The CSS below handles a button that lives *inside* .rg-thumb.rg-active.       */
+.rg-thumb.rg-active .rg-nav-btn,
+#rgNavBtn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width:  44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.92);
+  color: #222;
+  font-size: 22px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  transition: background 0.2s, transform 0.15s;
+  z-index: 10;
+}
+
+.rg-thumb.rg-active .rg-nav-btn:hover,
+#rgNavBtn:hover {
+  background: #fff;
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+/* ── Mini dot indicators ── */
+.rg-mini-dots {
   display: flex;
   justify-content: center;
-  align-items: center;
-  background: #0d0d0d;
-  border-top: 1px solid rgba(194, 158, 108, 0.15);
-  position: relative;
-  overflow: hidden;
+  gap: 8px;
+  margin-top: 20px;
 }
 
-/* Subtle gold glow behind each section */
-.experience-section::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 50%;
-  transform: translateX(-50%);
-  width: 600px;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(194,158,108,0.5), transparent);
+.rg-thumb-mini {
+  width: 28px;
+  height: 4px;
+  border-radius: 2px;
+  background: #ccc;
+  cursor: pointer;
+  transition: background 0.25s, width 0.25s;
 }
 
-.experience-section-inner {
-  max-width: 760px;
-  width: 100%;
-  text-align: center;
-}
-
-.experience-section-tag {
-  font-family: 'Cinzel', serif;
-  font-size: 0.75rem;
-  letter-spacing: 0.25em;
-  color: #c29e6c;
-  text-transform: uppercase;
-  margin-bottom: 18px;
-  opacity: 0.85;
-}
-
-.experience-section-title {
-  font-family: 'Cinzel', serif;
-  font-size: clamp(2rem, 5vw, 3.5rem);
-  font-weight: 700;
-  color: #f0e6d0;
-  letter-spacing: 0.06em;
-  margin: 0 0 12px;
-  text-shadow: 0 2px 24px rgba(194,158,108,0.2);
-}
-
-.experience-section-subtitle {
-  font-family: 'Cinzel', serif;
-  font-size: clamp(0.85rem, 2vw, 1.1rem);
-  color: #c29e6c;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  margin: 0 0 28px;
-}
-
-.experience-section-body {
-  font-size: clamp(0.95rem, 2vw, 1.1rem);
-  line-height: 1.85;
-  color: rgba(240, 230, 208, 0.72);
-  max-width: 600px;
-  margin: 0 auto 40px;
-}
-
-.experience-section-cta {
-  display: inline-block;
-  padding: 14px 40px;
-  border: 1px solid #c29e6c;
-  color: #c29e6c;
-  font-family: 'Cinzel', serif;
-  font-size: 0.8rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  text-decoration: none;
-  transition: background 0.3s, color 0.3s;
-}
-
-.experience-section-cta:hover {
-  background: #c29e6c;
-  color: #0d0d0d;
-}
-
-/* Individual section accent colours */
-.experience-journey  { background: #0d0d0d; }
-.experience-valkyrie { background: #0b0f0d; }
-.experience-odin     { background: #0d0b0a; }
-
-/* ── RESPONSIVE ── */
-@media (max-width: 600px) {
-  .experience-section {
-    padding: 70px 24px;
-  }
+.rg-thumb-mini.active {
+  background: #b3913e;   /* swap to your brand colour */
+  width: 40px;
 }

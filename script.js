@@ -53,10 +53,6 @@ checkTabsLayout();
 window.addEventListener('resize', checkTabsLayout);
 
 // ── SCROLL TO SECTION HELPER ──
-// These are the possible id="" values for each experience section in your HTML.
-// The script tries each one in order and scrolls to the first match it finds.
-// ✏️  If none work, open your HTML, find the <section id="..."> for each experience,
-//     and add that id to the matching array below.
 var sectionTargets = {
   journey:  ['journey',  'journey-section',  'couples-journey',  'experience-journey',  'couples'],
   valkyrie: ['valkyrie', 'valkyrie-section', 'womens-experience','experience-valkyrie', 'womens'],
@@ -70,18 +66,16 @@ function scrollToExperience(key) {
   for (var i = 0; i < ids.length; i++) {
     var el = document.getElementById(ids[i]);
     if (el) {
-      // Close modal if it's open
       var modal = document.getElementById('couplesModal');
       if (modal) modal.classList.remove('open');
 
-      // Account for fixed nav height
       var navHeight = nav ? nav.offsetHeight : 80;
       var top = el.getBoundingClientRect().top + window.scrollY - navHeight - 20;
       window.scrollTo({ top: top, behavior: 'smooth' });
       return true;
     }
   }
-  return false; // no matching section found in HTML
+  return false;
 }
 
 // ── COUPLES EXPERIENCE — click scrolls to section, falls back to modal ──
@@ -107,10 +101,8 @@ var couplesExperiences = {
 };
 
 function openCouplesModal(key) {
-  // Try to scroll to the matching section first
   var scrolled = scrollToExperience(key);
 
-  // If no section was found in the HTML, open the modal as fallback
   if (!scrolled) {
     var data = couplesExperiences[key];
     if (!data) return;
@@ -190,35 +182,190 @@ baDots.forEach(function (dot) {
 });
 
 // ── ROTATION GALLERY ──
-var rgActive = 2;
-var rgThumbs = document.querySelectorAll('.rg-thumb');
-var rgMinis = document.querySelectorAll('.rg-thumb-mini');
-var rgStrip = document.getElementById('rgStrip');
+// Injects a <style> tag with !important to defeat ALL existing CSS.
+// Pattern : even index → SMALL  |  odd index → BIG  |  active → LARGEST
+// Nav button created by JS (no HTML change needed).
+// Button shows ‹ going left, › going right. Keyboard ← / → works too.
+(function () {
+  var rgActive    = 2;  // starting active index
+  var rgDirection = 1;  // +1 = right (›) | -1 = left (‹)
 
-function rgSetActive(i) {
-  rgActive = i;
-  rgThumbs.forEach(function (t, idx) {
-    t.classList.remove('active', 'semi-active');
-    if (idx === i) t.classList.add('active');
-    else if (idx === i - 1 || idx === i + 1) t.classList.add('semi-active');
+  var rgThumbs = document.querySelectorAll('.rg-thumb');
+  var rgMinis  = document.querySelectorAll('.rg-thumb-mini');
+  var rgStrip  = document.getElementById('rgStrip');
+  var rgPrev   = document.getElementById('rgPrev');
+  var rgNext   = document.getElementById('rgNext');
+
+  if (!rgThumbs.length) return;
+
+  // ── Sizes (px) — dramatic difference so alternating is clearly visible ──
+  var W_ACTIVE = 230, H_ACTIVE = 280;
+  var W_BIG    = 170, H_BIG    = 210;
+  var W_SMALL  = 150, H_SMALL  = 120;
+
+  // ── Inject <style> with !important — nothing beats this ──
+  var st = document.getElementById('rg-override-style') || document.createElement('style');
+  st.id = 'rg-override-style';
+  st.textContent =
+    /* Strip: flex, baseline-aligned, NO overflow clip on strip itself */
+    '#rgStrip{display:flex!important;align-items:flex-end!important;gap:12px!important;' +
+      'transition:transform .45s cubic-bezier(.25,.8,.25,1)!important;' +
+      'overflow:visible!important;padding-top:' + (H_ACTIVE - H_SMALL + 20) + 'px!important}' +
+    /* Strip wrapper: give it enough height and let cards overflow upward */
+    '#rgStrip{position:relative!important}' +
+    /* All thumbs */
+    '.rg-thumb{flex-shrink:0!important;border-radius:12px!important;overflow:hidden!important;' +
+      'position:relative!important;cursor:pointer!important;' +
+      'transition:width .4s cubic-bezier(.25,.8,.25,1),height .4s cubic-bezier(.25,.8,.25,1),' +
+        'opacity .35s ease,box-shadow .3s ease!important}' +
+    /* Image fills card */
+    '.rg-thumb img{width:100%!important;height:100%!important;object-fit:cover!important;' +
+      'display:block!important;pointer-events:none!important}' +
+    /* SMALL — even index */
+    '.rg-thumb.rg-small{width:'  + W_SMALL  + 'px!important;height:' + H_SMALL  + 'px!important;' +
+      'opacity:.60!important;box-shadow:none!important}' +
+    /* BIG — odd index */
+    '.rg-thumb.rg-big{width:'    + W_BIG    + 'px!important;height:' + H_BIG    + 'px!important;' +
+      'opacity:.82!important;box-shadow:none!important}' +
+    /* ACTIVE — always largest */
+    '.rg-thumb.rg-active{width:' + W_ACTIVE + 'px!important;height:' + H_ACTIVE + 'px!important;' +
+      'opacity:1!important;box-shadow:0 20px 50px rgba(0,0,0,.22)!important;cursor:default!important}';
+  if (!st.parentNode) document.head.appendChild(st);
+
+  // Give the strip's parent container enough height to show tall active card
+  // without needing overflow:visible on the page layout
+  if (rgStrip && rgStrip.parentElement) {
+    var wrap = rgStrip.parentElement;
+    wrap.style.setProperty('min-height', (H_ACTIVE + 40) + 'px', 'important');
+    wrap.style.setProperty('overflow',   'hidden',                'important');
+    wrap.style.setProperty('position',   'relative',             'important');
+  }
+
+  // ── Walk up DOM: unclip any ancestor that's too short to show the gallery ──
+  // This is the most common cause of all cards appearing the same height.
+  (function fixAncestors() {
+    var el = rgThumbs[0];
+    if (!el) return;
+    var limit = 8; // only walk up 8 levels max
+    while (el.parentElement && limit-- > 0) {
+      el = el.parentElement;
+      if (el === document.body) break;
+      var cs = window.getComputedStyle(el);
+      var h  = parseFloat(cs.height);
+      // If this ancestor has overflow:hidden AND is shorter than our active card, fix it
+      if ((cs.overflow === 'hidden' || cs.overflowY === 'hidden') && h < H_ACTIVE + 20) {
+        el.style.setProperty('overflow',   'visible',               'important');
+        el.style.setProperty('min-height', (H_ACTIVE + 40) + 'px', 'important');
+      }
+      // If it's a flex container stretching children to equal height, stop that
+      if (cs.display === 'flex' && cs.alignItems === 'stretch') {
+        el.style.setProperty('align-items', 'flex-end', 'important');
+      }
+    }
+  })();
+
+
+  // ── Nav button (created once, moved to active card each time) ──
+  var btn = document.createElement('button');
+  btn.setAttribute('aria-label', 'Navigate gallery');
+  btn.style.cssText =
+    'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);' +
+    'width:44px;height:44px;border-radius:50%;border:none;' +
+    'background:rgba(255,255,255,0.92);color:#333;font-size:26px;line-height:1;' +
+    'display:flex;align-items:center;justify-content:center;' +
+    'cursor:pointer;z-index:20;box-shadow:0 4px 16px rgba(0,0,0,.20);' +
+    'transition:transform .15s,background .2s;';
+  btn.addEventListener('mouseenter', function () {
+    btn.style.transform = 'translate(-50%,-50%) scale(1.12)';
+    btn.style.background = '#fff';
   });
-  rgMinis.forEach(function (m, idx) {
-    m.classList.toggle('active', idx === i);
+  btn.addEventListener('mouseleave', function () {
+    btn.style.transform = 'translate(-50%,-50%)';
+    btn.style.background = 'rgba(255,255,255,0.92)';
   });
-  var activeEl = rgThumbs[i];
-  if (activeEl && rgStrip) {
-    var offset = activeEl.offsetLeft - rgStrip.parentElement.offsetWidth / 2 + activeEl.offsetWidth / 2;
+  btn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    var next = rgActive + rgDirection;
+    if (next < 0 || next >= rgThumbs.length) { rgDirection = -rgDirection; next = rgActive + rgDirection; }
+    rgSetActive(next, rgDirection);
+  });
+
+  // ── Apply size classes (CSS handles the actual sizes via !important) ──
+  function rgApplySizes() {
+    if (btn.parentNode) btn.parentNode.removeChild(btn);
+    rgThumbs.forEach(function (t, idx) {
+      t.classList.remove('rg-small', 'rg-big', 'rg-active');
+      if (idx === rgActive) {
+        t.classList.add('rg-active');
+        t.appendChild(btn);
+      } else if (idx % 2 === 0) {
+        t.classList.add('rg-small');   // even → small
+      } else {
+        t.classList.add('rg-big');     // odd  → big
+      }
+    });
+  }
+
+  // ── Update button label to reflect current direction ──
+  function rgUpdateBtn() {
+    btn.textContent = rgDirection === 1 ? '›' : '‹';
+  }
+
+  // ── Update mini-dot indicators ──
+  function rgUpdateMinis() {
+    rgMinis.forEach(function (m, idx) {
+      m.classList.toggle('active', idx === rgActive);
+    });
+  }
+
+  // ── Scroll strip so active card is centred ──
+  function rgCentreActive() {
+    var activeEl = rgThumbs[rgActive];
+    if (!activeEl || !rgStrip) return;
+    var parent = rgStrip.parentElement;
+    var offset = activeEl.offsetLeft - parent.offsetWidth / 2 + activeEl.offsetWidth / 2;
     rgStrip.style.transform = 'translateX(-' + Math.max(0, offset) + 'px)';
   }
-}
 
-rgThumbs.forEach(function (t, i) { t.addEventListener('click', function () { rgSetActive(i); }); });
-rgMinis.forEach(function (m, i) { m.addEventListener('click', function () { rgSetActive(i); }); });
+  // ── Master setter ──
+  function rgSetActive(i, dir) {
+    if (i < 0 || i >= rgThumbs.length) return;
+    if (typeof dir !== 'undefined') rgDirection = dir;
+    rgActive = i;
+    rgApplySizes();
+    rgUpdateBtn();
+    rgUpdateMinis();
+    rgCentreActive();
+  }
 
-var rgPrev = document.getElementById('rgPrev');
-var rgNext = document.getElementById('rgNext');
-if (rgPrev) rgPrev.addEventListener('click', function () { rgSetActive(Math.max(0, rgActive - 1)); });
-if (rgNext) rgNext.addEventListener('click', function () { rgSetActive(Math.min(rgThumbs.length - 1, rgActive + 1)); });
+  // Thumb click → infer direction from position relative to current active
+  rgThumbs.forEach(function (t, i) {
+    t.addEventListener('click', function () {
+      if (i === rgActive) return;
+      rgSetActive(i, i > rgActive ? 1 : -1);
+    });
+  });
+
+  // Mini dot click
+  rgMinis.forEach(function (m, i) {
+    m.addEventListener('click', function () {
+      rgSetActive(i, i > rgActive ? 1 : -1);
+    });
+  });
+
+  // Legacy separate prev/next buttons
+  if (rgPrev) rgPrev.addEventListener('click', function () { rgSetActive(Math.max(0, rgActive - 1), -1); });
+  if (rgNext) rgNext.addEventListener('click', function () { rgSetActive(Math.min(rgThumbs.length - 1, rgActive + 1), 1); });
+
+  // Keyboard ← / → — also updates button direction label
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft')  rgSetActive(Math.max(0, rgActive - 1), -1);
+    if (e.key === 'ArrowRight') rgSetActive(Math.min(rgThumbs.length - 1, rgActive + 1), 1);
+  });
+
+  // Init
+  rgSetActive(rgActive, 1);
+})();
 
 // ── PROJECT FILTER ──
 var filterBtns = document.querySelectorAll('.filter-btn');

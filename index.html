@@ -100,55 +100,6 @@
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════════════════
-     PASTE THIS BLOCK right after the closing </section>
-     of your couples-hero-section (around line 100)
-     ═══════════════════════════════════════════════════════ -->
-
-<!-- ── 01 JOURNEY TO VALHALLA ── -->
-<section id="journey" class="experience-section experience-journey">
-  <div class="experience-section-inner">
-    <div class="experience-section-tag">01 — Featured</div>
-    <h2 class="experience-section-title">Journey to Valhalla</h2>
-    <p class="experience-section-subtitle">The Complete Couple's Experience</p>
-    <p class="experience-section-body">
-      Embark on an unforgettable journey together. A carefully curated experience that weaves
-      ancient Norse mythology with modern luxury, designed for two souls seeking adventure and
-      connection beyond the ordinary.
-    </p>
-    <a href="#" class="experience-section-cta">Book This Experience</a>
-  </div>
-</section>
-
-<!-- ── 02 VALHALLA'S VALKYRIE ── -->
-<section id="valkyrie" class="experience-section experience-valkyrie">
-  <div class="experience-section-inner">
-    <div class="experience-section-tag">02 — Women's Experience</div>
-    <h2 class="experience-section-title">Valhalla's Valkyrie</h2>
-    <p class="experience-section-subtitle">A Women's Experience</p>
-    <p class="experience-section-body">
-      Step into the power of the Valkyrie. An immersive journey crafted exclusively for women —
-      honoring strength, grace, and the warrior spirit within. A transformative experience
-      guided by the sacred feminine.
-    </p>
-    <a href="#" class="experience-section-cta">Book This Experience</a>
-  </div>
-</section>
-
-<!-- ── 03 ODIN'S HALL ── -->
-<section id="odin" class="experience-section experience-odin">
-  <div class="experience-section-inner">
-    <div class="experience-section-tag">03 — Men's Experience</div>
-    <h2 class="experience-section-title">Odin's Hall</h2>
-    <p class="experience-section-subtitle">A Men's Experience</p>
-    <p class="experience-section-body">
-      Enter the legendary hall of Odin. A rite of passage forged for men — drawing on the wisdom,
-      endurance, and nobility of the Norse gods. An experience that awakens purpose and brotherhood.
-    </p>
-    <a href="#" class="experience-section-cta">Book This Experience</a>
-  </div>
-</section>
-
 <!-- Couples Modal -->
 <div class="couples-modal-backdrop" id="couplesModal" onclick="closeCouplesModalOutside(event)">
   <div class="couples-modal" role="dialog" aria-modal="true">
@@ -553,11 +504,20 @@
   var navBtn = document.getElementById('rg2NavBtn');
   var total = cards.length;
   var active = 2; // start at center
+  var lastDirection = 'right'; // track last nav direction
 
-  function setActive(i) {
+  function setActive(i, direction) {
     active = ((i % total) + total) % total;
-    cards.forEach(function(c, idx) {
+
+    // Update button arrow to reflect direction
+    if (direction) lastDirection = direction;
+    if (navBtn) navBtn.textContent = lastDirection === 'left' ? '‹' : '›';
+
+    cards.forEach(function(c) {
       c.classList.remove('active', 'semi-active');
+    });
+
+    cards.forEach(function(c, idx) {
       var rel = ((idx - active + total) % total + total) % total;
       if (rel === 0) c.classList.add('active');
       else if (rel === 1 || rel === total - 1) c.classList.add('semi-active');
@@ -565,52 +525,71 @@
 
     // Move nav button to active card
     var activeCard = cards[active];
-    if (navBtn && activeCard) {
-      if (!activeCard.contains(navBtn)) activeCard.appendChild(navBtn);
+    if (navBtn && activeCard && !activeCard.contains(navBtn)) {
+      activeCard.appendChild(navBtn);
     }
 
     dots.forEach(function(d, idx) { d.classList.toggle('active', idx === active); });
     if (badge) badge.textContent = active + 1;
 
-    // Reorder DOM: bring active to visual center by rotating array
+    // Reorder DOM: bring active to visual center
     var strip = document.getElementById('rg2Strip');
     if (!strip) return;
-    // Shift cards so active is at index 3 (center of 7)
     var centerPos = 3;
     var shift = active - centerPos;
     var reordered = [];
     for (var j = 0; j < total; j++) {
       reordered.push(cards[((j + shift) % total + total) % total]);
     }
-    reordered.forEach(function(card) { strip.appendChild(card); });
+
+    // Apply alternating big/small classes based on strip position
+    reordered.forEach(function(card, pos) {
+      card.classList.remove('rg2-big', 'rg2-small');
+      // Center card (pos 3) is always active/big via .active override
+      // Alternate: even positions = big, odd = small
+      if (pos % 2 === 0) card.classList.add('rg2-big');
+      else card.classList.add('rg2-small');
+      strip.appendChild(card);
+    });
   }
 
-  // Clicks on cards
+  // Clicks on cards — detect left or right of active
   cards.forEach(function(c, i) {
-    c.addEventListener('click', function() { setActive(i); });
+    c.addEventListener('click', function() {
+      var rel = ((i - active + total) % total + total) % total;
+      var dir = (rel <= total / 2) ? 'right' : 'left';
+      setActive(i, dir);
+    });
   });
 
   // Dots
   dots.forEach(function(d, i) {
-    d.addEventListener('click', function() { setActive(i); });
+    d.addEventListener('click', function() {
+      var dir = i > active ? 'right' : 'left';
+      setActive(i, dir);
+    });
   });
 
-  // Nav button cycles forward
+  // Nav button — direction toggles on each click
   if (navBtn) {
     navBtn.addEventListener('click', function(e) {
       e.stopPropagation();
-      setActive(active + 1);
+      if (lastDirection === 'right') {
+        setActive(active + 1, 'right');
+      } else {
+        setActive(active - 1, 'left');
+      }
     });
   }
 
   // Keyboard
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'ArrowLeft') setActive(active - 1);
-    if (e.key === 'ArrowRight') setActive(active + 1);
+    if (e.key === 'ArrowLeft') setActive(active - 1, 'left');
+    if (e.key === 'ArrowRight') setActive(active + 1, 'right');
   });
 
   // Init
-  setActive(2);
+  setActive(2, 'right');
 })();
 </script>
 
