@@ -290,26 +290,34 @@ nav.nav-hidden .nav-links { pointer-events: none; }
 .wcu-arrow-line { position: absolute; background: rgba(184,144,58,0.5); pointer-events: none; }
 .wcu-arrow-line::after { content: ''; position: absolute; width: 0; height: 0; border-style: solid; }
 
-/* Node Positions — DESKTOP */
-.wcu-node-tl { top: 85px; left: 280px; }
+/* Node Positions — DESKTOP
+   Bowl: SVG center (200,110) radius 110. All positions verified:
+   - orb entirely outside bowl (orb edge + 10px gap before bowl boundary)
+   - positioned at visual centroid of the VISIBLE blade strip (not the full blade)
+   TL: visible gold strip at y≈145 spans SVG x=27→96. Center x=61.  left=250+61-25=286
+   TR: mirror.                                                          right=286
+   BL: widest visible zone at y≈235, blade spans SVG x=84→200. Center=142. left=250+142-25=367
+   BR: mirror.                                                          right=367
+*/
+.wcu-node-tl { top: 120px; left: 286px; }
 .wcu-node-tl .wcu-orb { color: #b3913e; }
 .wcu-node-tl .wcu-details { right: 155px; top: -15px; text-align: right; }
 .wcu-line-tl { width: 100px; height: 2px; right: 45px; top: 25px; }
 .wcu-line-tl::after { right: -8px; top: -5px; border-width: 6px 0 6px 10px; border-color: transparent transparent transparent rgba(184,144,58,0.6); }
 
-.wcu-node-tr { top: 85px; right: 280px; }
+.wcu-node-tr { top: 120px; right: 286px; }
 .wcu-node-tr .wcu-orb { color: #3d4d2d; }
 .wcu-node-tr .wcu-details { left: 155px; top: -15px; text-align: left; }
 .wcu-line-tr { width: 100px; height: 2px; left: 45px; top: 25px; }
 .wcu-line-tr::after { left: -8px; top: -5px; border-width: 6px 10px 6px 0; border-color: transparent rgba(184,144,58,0.6) transparent transparent; }
 
-.wcu-node-bl { top: 215px; left: 345px; }
+.wcu-node-bl { top: 210px; left: 367px; }
 .wcu-node-bl .wcu-orb { background: #3d4d2d; color: #fff; }
 .wcu-node-bl .wcu-details { left: -105px; top: 110px; text-align: center; }
 .wcu-line-bl { width: 2px; height: 60px; left: 24px; top: 40px; }
 .wcu-line-bl::after { bottom: -8px; left: -5px; border-width: 10px 6px 0 6px; border-color: rgba(184,144,58,0.6) transparent transparent transparent; }
 
-.wcu-node-br { top: 215px; right: 345px; }
+.wcu-node-br { top: 210px; right: 367px; }
 .wcu-node-br .wcu-orb { background: #b3913e; color: #fff; }
 .wcu-node-br .wcu-details { left: -105px; top: 110px; text-align: center; }
 .wcu-line-br { width: 2px; height: 60px; left: 24px; top: 40px; }
@@ -330,10 +338,13 @@ nav.nav-hidden .nav-links { pointer-events: none; }
   .center-bowl h2 { font-size: clamp(12px, 3.5vw, 20px); }
   .wcu-brand { font-size: clamp(8px, 2vw, 13px); padding: 0 10px; }
   .wcu-motto { font-size: clamp(5px, 1.5vw, 8px); }
-  .wcu-node-tl { top: 14%; left: calc(50% - 34%); }
-  .wcu-node-tr { top: 14%; right: calc(50% - 34%); left: auto; }
-  .wcu-node-bl { top: 38%; left: calc(50% - 11%); }
-  .wcu-node-br { top: 38%; right: calc(50% - 11%); left: auto; }
+  /* Tablet node positions — scale 0.8 of corrected SVG coords
+     TL SVG(61,145): offset from centre = 61-200=-139 → ×0.8=-111.2px → left:calc(50%-136px) top:116-25=91px
+     BL SVG(142,235): offset = -58 → ×0.8=-46.4px → left:calc(50%-71px) top:188-25=163px */
+  .wcu-node-tl { top: 91px;  left:  calc(50% - 136px); right: auto; }
+  .wcu-node-tr { top: 91px;  right: calc(50% - 136px); left: auto; }
+  .wcu-node-bl { top: 163px; left:  calc(50% - 71px);  right: auto; }
+  .wcu-node-br { top: 163px; right: calc(50% - 71px);  left: auto; }
   .wcu-orb { width: 44px; height: 44px; font-size: 18px; }
   .wcu-details { width: 160px; }
   .wcu-details h3 { font-size: 13px; }
@@ -402,19 +413,16 @@ nav.nav-hidden .nav-links { pointer-events: none; }
   .wcu-node { width: 40px; height: 40px; }
   .wcu-orb  { width: 40px; height: 40px; font-size: 16px; }
 
-  /* ── NODE POSITIONS (SVG-geometry derived) ──
-   * Formula: left = (svgX/400)*100% − halfOrb
-   *          top  = (svgY/320)*100% − halfOrb
-  /* ── NODE POSITIONS (SVG-geometry verified interior points) ──
-   * TL: SVG (80,150)  → 20%, 46.9%  — on left gold blade  ✓
-   * TR: SVG (320,150) → 80%, 46.9%  — on right green blade ✓
-   * BL: SVG (150,217) → 37.5%, 67.8% — on lower-left blade ✓
-   * BR: SVG (258,217) → 64.5%, 67.8% — on lower-right blade ✓
+  /* ── NODE POSITIONS — mobile (visual centroid of visible blade, orb-cleared from bowl)
+   * TL: SVG(61,145)  → 61/400=15.25%,  145/320=45.3%
+   * TR: SVG(339,145) → 339/400=84.75%, 145/320=45.3%
+   * BL: SVG(142,235) → 142/400=35.5%,  235/320=73.4%
+   * BR: SVG(258,235) → 258/400=64.5%,  235/320=73.4%
    */
-  .wcu-node-tl { left: calc(20%   - 20px); top: calc(46.875% - 20px); right: auto; }
-  .wcu-node-tr { left: calc(80%   - 20px); top: calc(46.875% - 20px); right: auto; }
-  .wcu-node-bl { left: calc(37.5% - 20px); top: calc(67.8%   - 20px); right: auto; }
-  .wcu-node-br { left: calc(64.5% - 20px); top: calc(67.8%   - 20px); right: auto; }
+  .wcu-node-tl { left: calc(15.25% - 20px); top: calc(45.3%  - 20px); right: auto; }
+  .wcu-node-tr { left: calc(84.75% - 20px); top: calc(45.3%  - 20px); right: auto; }
+  .wcu-node-bl { left: calc(35.5%  - 20px); top: calc(73.4%  - 20px); right: auto; }
+  .wcu-node-br { left: calc(64.5%  - 20px); top: calc(73.4%  - 20px); right: auto; }
 
   /* Disable hover popups on mobile */
   .wcu-popup,
