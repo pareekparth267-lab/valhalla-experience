@@ -424,112 +424,80 @@ nav.nav-hidden .nav-links { pointer-events: none; }
 .wcu-mobile-panel { display: none; }
 
 /* ══════════════════════════════════════
-   RESPONSIVE: TABLET (≤900px)
-   Layer tracks the SVG (65vw, max 320px).
-   Node % positions need no changes — they
-   scale automatically with the layer.
+   RESPONSIVE: TABLET + PHONE (≤900px)
+   Direct proportional sizing — wrapper
+   matches SVG aspect ratio exactly.
+   No scale tricks. Same shape as desktop.
    ══════════════════════════════════════ */
 @media (max-width: 900px) {
-  .infographic-stage { min-height: auto; padding: 48px 16px 32px; }
-  .main-wrapper { width: 100%; height: auto; min-height: 380px; }
-  .design-svg { width: 65vw; max-width: 320px; }
-  /* Layer matches SVG exactly at tablet */
-  .wcu-node-layer { width: 65vw; max-width: 320px; }
-  .center-bowl { width: 40vw; max-width: 200px; height: 40vw; max-height: 200px; }
-  .center-bowl h2 { font-size: clamp(12px, 3.5vw, 20px); }
-  .wcu-brand { font-size: clamp(8px, 2vw, 13px); padding: 0 10px; }
-  .wcu-motto { font-size: clamp(5px, 1.5vw, 8px); }
-  .wcu-orb { width: 44px; height: 44px; font-size: 18px; }
-  /* Adjust half-orb offset for smaller orb (44/2=22px) */
-  .wcu-node-tl { left: calc(16.25%  - 22px); top: calc(51.5625% - 22px); }
-  .wcu-node-tr { left: calc(83.75%  - 22px); top: calc(51.5625% - 22px); }
-  .wcu-node-bl { left: calc(35%     - 22px); top: calc(80.625%  - 22px); }
-  .wcu-node-br { left: calc(65%     - 22px); top: calc(80.625%  - 22px); }
-  .wcu-details { width: 160px; }
-  .wcu-details h3 { font-size: 13px; }
-  .wcu-node-tl .wcu-details { right: 110px; top: -10px; }
-  .wcu-node-tr .wcu-details { left: 110px; top: -10px; }
-  .wcu-line-tl, .wcu-line-tr { width: 60px; }
+  #why-us { overflow: hidden; }
+  .infographic-stage { min-height: auto; padding: 60px 0 48px; align-items: center; }
+
+  /* Wrapper = SVG aspect ratio exactly, no dead space */
+  .main-wrapper {
+    width: min(88vw, 560px);
+    aspect-ratio: 400 / 320;
+    height: auto;
+    min-height: unset;
+    position: relative;
+  }
+
+  /* SVG and node layer fill wrapper exactly */
+  .design-svg     { width: 100%; max-width: 100%; position: absolute; left: 50%; transform: translateX(-50%); top: 0; }
+  .wcu-node-layer { width: 100%; max-width: 100%; left: 50%; transform: translateX(-50%); }
+
+  /* Bowl = 55% wide x 68.75% tall = perfect circle at 400:320 ratio */
+  .center-bowl    { width: 55%; height: 68.75%; left: 50%; top: 0; transform: translateX(-50%); }
+  .center-bowl h2 { font-size: clamp(18px, 4.5vw, 32px); }
+  .wcu-brand      { font-size: clamp(12px, 2.8vw, 18px); padding: 0 16px; }
+  .wcu-motto      { font-size: clamp(7px, 1.7vw, 12px); margin: 6px 0; }
+
+  /* 64px orbs, half-offset 32px */
+  .wcu-node { width: 64px; height: 64px; }
+  .wcu-orb  { width: 64px; height: 64px; font-size: 28px; }
+  .wcu-node-tl { left: calc(16.25% - 32px); top: calc(51.5625% - 32px); }
+  .wcu-node-tr { left: calc(83.75% - 32px); top: calc(51.5625% - 32px); }
+  .wcu-node-bl { left: calc(35%    - 32px); top: calc(80.625%  - 32px); }
+  .wcu-node-br { left: calc(65%    - 32px); top: calc(80.625%  - 32px); }
+  .wcu-details { width: 200px; }
+  .wcu-details h3 { font-size: 15px; }
+  .wcu-node-tl .wcu-details { right: 140px; top: -12px; }
+  .wcu-node-tr .wcu-details { left: 140px;  top: -12px; }
+  .wcu-line-tl, .wcu-line-tr { width: 80px; }
 }
 
 /* ══════════════════════════════════════
    RESPONSIVE: PHONE (≤600px)
-   Layer fills wrapper exactly (= SVG).
-   Node % positions stay the same;
-   only the half-orb px offset changes
-   because orb shrinks to 40px (half=20px).
+   Overrides the ≤900px tablet rules above.
+   Smaller orbs (44px) to fit blade width.
    ══════════════════════════════════════ */
 @media (max-width: 600px) {
-  /* Stage layout */
-  .infographic-stage {
-    flex-direction: column;
-    align-items: center;
-    padding: 36px 0 0;
-    min-height: auto;
-    gap: 0;
-  }
+  .infographic-stage { padding: 60px 0 40px; }
 
-  /* Wrapper = exact SVG aspect ratio container */
-  .main-wrapper {
-    width: 92vw;
-    max-width: 400px;
-    aspect-ratio: 400 / 320;
-    height: auto;
-    position: relative;
-    overflow: visible;
-    margin: 0 auto;
-  }
+  /* Narrower wrapper for phone */
+  .main-wrapper { width: 96vw; max-width: 420px; }
 
-  /* SVG fills wrapper exactly */
-  .design-svg {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    max-width: 100%;
-    left: 0;
-    top: 0;
-    transform: none;
-  }
+  /* 44px orbs, half-offset 22px */
+  .wcu-node { width: 44px; height: 44px; }
+  .wcu-orb  { width: 44px; height: 44px; font-size: 18px; }
+  .wcu-node-tl { left: calc(16.25% - 22px); top: calc(51.5625% - 22px); }
+  .wcu-node-tr { left: calc(83.75% - 22px); top: calc(51.5625% - 22px); }
+  .wcu-node-bl { left: calc(35%    - 22px); top: calc(80.625%  - 22px); }
+  .wcu-node-br { left: calc(65%    - 22px); top: calc(80.625%  - 22px); }
 
-  /* Layer also fills wrapper exactly */
-  .wcu-node-layer {
-    width: 100%;
-    max-width: 100%;
-    left: 0;
-    transform: none;
-  }
+  .center-bowl h2 { font-size: clamp(14px, 7vw, 22px); }
+  .wcu-brand      { font-size: clamp(9px, 4vw, 13px); padding: 0 8px; }
+  .wcu-motto      { font-size: clamp(5px, 2.5vw, 8px); letter-spacing: 0; margin: 3px 0; }
 
-  /* Center bowl */
-  .center-bowl {
-    width: 55%;
-    height: 68.75%;
-    left: 50%;
-    top: 0;
-    transform: translateX(-50%);
-  }
-  .center-bowl h2  { font-size: clamp(10px, 5vw, 18px); }
-  .wcu-brand       { font-size: clamp(7px, 2.8vw, 11px); padding: 0 8px; }
-  .wcu-motto       { font-size: clamp(4px, 2vw, 7px); letter-spacing: 0; margin: 3px 0; }
-
-  /* Orb shrinks to 40px — half-orb = 20px */
-  .wcu-node { width: 40px; height: 40px; }
-  .wcu-orb  { width: 40px; height: 40px; font-size: 16px; }
-
-  /* Re-declare positions with 20px half-orb offset */
-  .wcu-node-tl { left: calc(16.25%  - 20px); top: calc(51.5625% - 20px); }
-  .wcu-node-tr { left: calc(83.75%  - 20px); top: calc(51.5625% - 20px); }
-  .wcu-node-bl { left: calc(35%     - 20px); top: calc(80.625%  - 20px); }
-  .wcu-node-br { left: calc(65%     - 20px); top: calc(80.625%  - 20px); }
-
-  /* Disable hover popups on mobile */
+  /* No hover popups on mobile */
   .wcu-popup,
   .wcu-node:hover .wcu-popup { opacity: 0 !important; pointer-events: none; }
   .wcu-details { display: none !important; }
 
-  /* Active orb ring */
+  /* Active orb: gold ring only, no resize */
   .wcu-node.active .wcu-orb {
-    transform: scale(1.2);
-    box-shadow: 0 0 0 3px #1a1a1a, 0 0 0 5px var(--node-color, #b3913e), 0 6px 20px rgba(0,0,0,0.6);
+    transform: scale(1) !important;
+    box-shadow: 0 0 0 3px rgba(184,144,58,0.9), 0 4px 16px rgba(0,0,0,0.5);
   }
 
   /* ══ MOBILE INFO PANEL ══ */
@@ -537,36 +505,23 @@ nav.nav-hidden .nav-links { pointer-events: none; }
     display: block;
     width: 92vw;
     max-width: 400px;
-    margin: 0 auto;
+    margin: 12px auto 0;
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .wcu-mobile-panel.open { max-height: 260px; }
 
-  /* Top strip: colored bar + arrow */
-  .wcu-panel-top {
-    position: relative;
-    height: 18px;
-  }
+  .wcu-panel-top { position: relative; height: 18px; }
   .wcu-panel-indicator {
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 4px;
-    background: #b8903a;
-    transition: background 0.3s;
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 4px; background: #b8903a; transition: background 0.3s;
   }
-  /* Upward-pointing triangle — points to the clicked icon */
   .wcu-arrow-row {
-    position: absolute;
-    top: 4px;
-    left: 0; right: 0;
-    height: 14px;
-    /* arrow positioned by JS via --arrow-left */
+    position: absolute; top: 4px; left: 0; right: 0; height: 14px;
   }
   .wcu-arrow-up {
-    position: absolute;
-    top: 0;
+    position: absolute; top: 0;
     left: var(--arrow-left, 50%);
     transform: translateX(-50%);
     width: 0; height: 0;
@@ -575,68 +530,32 @@ nav.nav-hidden .nav-links { pointer-events: none; }
     border-bottom: 10px solid var(--arrow-color, #b3913e);
     transition: left 0.3s, border-bottom-color 0.3s;
   }
-
-  /* Panel body: icon orb left + text right */
   .wcu-panel-body {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    padding: 18px 16px 22px;
-    background: #181818;
-    border: 1px solid rgba(255,255,255,0.06);
-    border-top: none;
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 18px 16px 22px; background: #181818;
+    border: 1px solid rgba(255,255,255,0.06); border-top: none;
   }
-
-  /* Icon orb in panel */
   .wcu-panel-orb {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: #b8903a;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    color: #fff;
-    flex-shrink: 0;
-    transition: background 0.3s;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    width: 48px; height: 48px; border-radius: 50%; background: #b8903a;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; color: #fff; flex-shrink: 0;
+    transition: background 0.3s; box-shadow: 0 4px 16px rgba(0,0,0,0.4);
   }
-
   .wcu-panel-right { flex: 1; }
-
-  /* Section label */
   .wcu-panel-label {
-    display: block;
-    font-size: 9px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: #b3913e;
-    margin-bottom: 5px;
-    transition: color 0.3s;
+    display: block; font-size: 9px; letter-spacing: 3px;
+    text-transform: uppercase; color: #b3913e;
+    margin-bottom: 5px; transition: color 0.3s;
   }
-
-  /* Title */
   #wcuPanelTitle {
-    font-family: var(--font-display);
-    font-size: 18px;
-    font-weight: 600;
-    color: #fff;
-    margin: 0 0 8px;
-    line-height: 1.25;
+    font-family: var(--font-display); font-size: 18px;
+    font-weight: 600; color: #fff; margin: 0 0 8px; line-height: 1.25;
   }
-
-  /* Description */
   #wcuPanelText {
-    font-size: 12.5px;
-    color: rgba(255,255,255,0.65);
-    line-height: 1.65;
-    margin: 0;
+    font-size: 12.5px; color: rgba(255,255,255,0.65);
+    line-height: 1.65; margin: 0;
   }
 }
-
-
-/* BUTTONS */
 .btn { display: inline-flex; align-items: center; gap: 10px; padding: 14px 32px; background: var(--gold); color: var(--bg); font-size: 12px; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; text-decoration: none; border: none; cursor: pointer; transition: all .3s; }
 .btn:hover { background: var(--gold2); transform: translateY(-2px); }
 .btn-outline { background: transparent; color: var(--gold); border: 1px solid var(--gold); }
